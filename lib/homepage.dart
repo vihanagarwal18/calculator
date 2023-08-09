@@ -1,53 +1,79 @@
 import 'package:flutter/material.dart';
-import 'package:calculator/NeuContainer.dart';
+//import 'package:calculator/NeuContainer.dart';
 import 'package:flutter/rendering.dart';
-import 'package:calculator/calculator_logic.dart';
+//import 'package:calculator/calculator_logic.dart';
 import 'package:provider/provider.dart';
 import 'package:math_expressions/math_expressions.dart';
-
 // ignore_for_file: prefer_const_constructors
 
 const Color colorDark=Color(0xFF374352);
 const Color colorLight=Color(0xFFe6eeff);
 
-
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
-
   @override
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
+
 class _HomeScreenState extends State<HomeScreen> {
+  bool darkmode=true;
   String result="0";
   String userInput="";
   late String temp_input;
   Color userInputColor = Colors.black54;
-
   List<String> buttonList=["AC","(",")","/","7","8","9","*","4","5","6","+","1","2","3","-","C","0",".","="];
   @override
   Widget build(BuildContext context) {
     var h=MediaQuery.of(context).size.height;
     return SafeArea(
-        child: Scaffold(
-          body: Column(
-            children: [
-              Container(
-                height: h/2.79,
-                child: resultWidget(),
+      child: Scaffold(
+        appBar: AppBar(
+          backgroundColor: darkmode? colorDark :colorLight,
+          actions: [
+            //one for postfix infix expression
+            IconButton(
+                icon: Icon(
+                    Icons.settings,
+                    color: darkmode? colorLight :colorDark,
+                ),
+                onPressed:(){
+                  //settingdialogbox();
+                },
+            ),
+            IconButton(
+              icon: Icon(
+                  Icons.color_lens,
+                  color: darkmode? colorLight :colorDark,
               ),
-              Expanded(
-                child: buttonWidget(),
-              ),
-            ],
-          ),
+              onPressed: (){
+                //switch boolean value of darkmode
+                setState(() {
+                  darkmode = !darkmode;
+                });
+              },
+            )
+            //one for color switch
+          ],
         ),
+        body: Column(
+          children: [
+            Container(
+              height: h/2.79,
+              child: resultWidget(),
+            ),
+            Expanded(
+              child: buttonWidget(),
+            ),
+          ],
+        ),
+      ),
     );
   }
 
   Widget resultWidget(){
     return Container(
-      color: colorLight,
+      color: darkmode ? colorDark :colorLight,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
@@ -58,7 +84,7 @@ class _HomeScreenState extends State<HomeScreen> {
               userInput,
               style: TextStyle(
                 fontSize: 32,
-                color: userInputColor,
+                color: darkmode ? Colors.white54 :userInputColor,
               ),
             ),
           ),
@@ -70,6 +96,7 @@ class _HomeScreenState extends State<HomeScreen> {
               style: TextStyle(
                 fontSize: 48,
                 fontWeight: FontWeight.bold,
+                color: darkmode ? Colors.white54 :userInputColor,
               ),
             ),
           ),
@@ -81,9 +108,9 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget buttonWidget(){
     return Container(
       padding: EdgeInsets.all(10),
-      color: Color.fromARGB(66, 233, 232, 232),
+      color: darkmode? Color(0xFF1E2530):Color.fromARGB(66, 233, 232, 232),
       child: GridView.builder(
-        itemCount:buttonList.length,
+          itemCount:buttonList.length,
           gridDelegate:SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: 4,
             crossAxisSpacing: 10,
@@ -97,20 +124,20 @@ class _HomeScreenState extends State<HomeScreen> {
   }
   getColor(String text){
     if(text =="/" ||text =="*" || text=="+" || text=="-" || text=="C" || text=="(" || text==")"){
-      return Colors.redAccent;
+      return (darkmode? Colors.greenAccent: Colors.redAccent);
     }
     if(text=="=" || text=="AC"){
-      return colorLight;
+      return (darkmode? colorDark :colorLight);
     }
-    return Colors.indigo;
+    return (darkmode? Colors.lightBlueAccent:Colors.indigo);
   }
 
   getBgColor(String text){
     if(text=="AC"){
-      return Colors.redAccent;
+      return (darkmode? Colors.greenAccent:Colors.redAccent);
     }
     if(text=="="){
-      return colorLight;
+      return (darkmode? Colors.greenAccent:Colors.redAccent);
     }
   }
   Widget button(String text){
@@ -127,7 +154,7 @@ class _HomeScreenState extends State<HomeScreen> {
           borderRadius: BorderRadius.circular(10),
           boxShadow: [
             BoxShadow(
-              color: Colors.grey.withOpacity(0.1),
+              color: darkmode? Colors.black12.withOpacity(0.8): Colors.grey.withOpacity(0.2),
               blurRadius: 1,
               spreadRadius: 1,
             ),
@@ -135,12 +162,12 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
         child: Center(
             child: Text(
-                text,
-                style: TextStyle(
-                  color: getColor(text),
-                  fontSize: 30,
-                  fontWeight: FontWeight.bold,
-                ),
+              text,
+              style: TextStyle(
+                color: getColor(text),
+                fontSize: 30,
+                fontWeight: FontWeight.bold,
+              ),
             )
         ),
       ),
@@ -182,13 +209,13 @@ class _HomeScreenState extends State<HomeScreen> {
       var exp= Parser().parse(userInput);
       var eveluation=exp.evaluate(EvaluationType.REAL,ContextModel());
       setState(() {
-        userInputColor=Colors.black;
+        userInputColor=darkmode? Colors.white54 :Colors.black;
       });
       return eveluation.toString();
     }
     catch(e){
       setState(() {
-        userInputColor=Colors.redAccent;
+        userInputColor=darkmode? Colors.greenAccent :Colors.redAccent;
       });
       return "Error";
       //return temp_input;
