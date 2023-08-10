@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 //import 'package:calculator/NeuContainer.dart';
 import 'package:flutter/rendering.dart';
 //import 'package:calculator/calculator_logic.dart';
-import 'package:provider/provider.dart';
+//import 'package:provider/provider.dart';
 import 'package:math_expressions/math_expressions.dart';
+//import 'package:infix_expression_parser/infix_expression_converter.dart';
 // ignore_for_file: prefer_const_constructors
 
 const Color colorDark=Color(0xFF374352);
@@ -17,7 +18,60 @@ class HomeScreen extends StatefulWidget {
 
 
 class _HomeScreenState extends State<HomeScreen> {
-  bool darkmode=true;
+  //String selectedcalculator="INFIX";
+  String selectedExpressionFormat = "INFIX";
+
+  void _showSettingsPopupMenu(BuildContext context) async {
+    final String? selectedOption = await showMenu<String>(
+      context: context,
+      position: RelativeRect.fromLTRB(100, 100, 0, 0), // Adjust the position as needed
+      items: <PopupMenuEntry<String>>[
+        PopupMenuItem<String>(
+          value: 'INFIX',
+          child: Text(
+              'INFIX',
+              style: TextStyle(
+                //color: darkmode ? colorLight :colorDark,
+                //backgroundColor: darkmode ? colorDark :colorLight,
+              ),
+          ),
+          onTap: (){
+            setState(() {
+              selectedExpressionFormat="Infix";
+            });
+          },
+        ),
+        PopupMenuItem<String>(
+          value: 'PREFIX',
+          child: Text('PREFIX'),
+          onTap: (){
+            setState(() {
+              selectedExpressionFormat="Prefix";
+            });
+          },
+        ),
+        PopupMenuItem<String>(
+          value: 'POSTFIX',
+          child: Text('POSTFIX'),
+          onTap: (){
+            setState(() {
+              selectedExpressionFormat="Postfix";
+            });
+          },
+        ),
+      ],
+    );
+
+    if (selectedOption != null) {
+      // Handle the selected option here
+      // For example, you can call a method to update the expression format
+      // based on the selectedOption ('INFIX', 'PREFIX', 'POSTFIX')
+      // updateExpressionFormat(selectedOption);
+    }
+  }
+
+
+  bool darkmode=false;
   String result="0";
   String userInput="";
   late String temp_input;
@@ -29,6 +83,12 @@ class _HomeScreenState extends State<HomeScreen> {
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
+          title: Text(
+            "${selectedExpressionFormat} Calulator" ,
+            style: TextStyle(
+              color: darkmode ? colorLight :colorDark,
+            ),
+          ),
           backgroundColor: darkmode? colorDark :colorLight,
           actions: [
             //one for postfix infix expression
@@ -39,6 +99,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
                 onPressed:(){
                   //settingdialogbox();
+                  _showSettingsPopupMenu(context);
                 },
             ),
             IconButton(
@@ -205,8 +266,19 @@ class _HomeScreenState extends State<HomeScreen> {
     userInput=userInput+text;
   }
   String calculate(){
+    String evaluating_String=userInput;
+    
+    if(selectedExpressionFormat=="PREFIX"){
+      evaluating_String=prefixToInfix(userInput);
+      print(evaluating_String);
+    }
+
+    if(selectedExpressionFormat=="POSTFIX"){
+      evaluating_String=postfixToInfix(userInput);
+      print(evaluating_String);
+    }
     try{
-      var exp= Parser().parse(userInput);
+      var exp= Parser().parse(evaluating_String);
       var eveluation=exp.evaluate(EvaluationType.REAL,ContextModel());
       setState(() {
         userInputColor=darkmode? Colors.white54 :Colors.black;
@@ -221,503 +293,49 @@ class _HomeScreenState extends State<HomeScreen> {
       //return temp_input;
     }
   }
+
+  // String calculate(){
+  //   try{
+  //     var exp= Parser().parse(userInput);
+  //     var eveluation=exp.evaluate(EvaluationType.REAL,ContextModel());
+  //     setState(() {
+  //       userInputColor=darkmode? Colors.white54 :Colors.black;
+  //     });
+  //     return eveluation.toString();
+  //   }
+  //   catch(e){
+  //     setState(() {
+  //       userInputColor=darkmode? Colors.greenAccent :Colors.redAccent;
+  //     });
+  //     return "Error";
+  //     //return temp_input;
+  //   }
+  // }
+
+  bool isOperator(String symbol) {
+    return symbol == "*" || symbol == "+" || symbol == "-" || symbol == "/" || symbol == "^" || symbol == "(" || symbol == ")";
+  }
+  String prefixToInfix(String prefix) {
+    List<String> symbols = [];
+    int l = prefix.length - 1;
+    while (l >= 0) {
+      if (!isOperator(prefix[l])) {
+        symbols.add(prefix[l]);
+        l--;
+      } else {
+        String string =
+            "(${symbols.removeLast()}${prefix[l]}${symbols.removeLast()})";
+        symbols.add(string);
+        l--;
+      }
+    }
+    return symbols.removeLast();
+  }
+  // prefixToInfix(String prefixExpression) {
+  //   // Your conversion logic here
+  // }
+  postfixToInfix(String postfixExpression) {
+    // Your conversion logic here
+  }
+
 }
-
-//
-// class Homepage extends StatefulWidget {
-//   const Homepage({Key? key}) : super(key: key);
-//
-//   @override
-//   State<Homepage> createState() => _HomepageState();
-// }
-// class _HomepageState extends State<Homepage> {
-//   bool darkMode = false;
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     return ChangeNotifierProvider<CalculatorLogic>(
-//       create: (_) => CalculatorLogic(),
-//       child: Consumer<CalculatorLogic>(
-//         builder: (context, calculator, _) {
-//           return Scaffold(
-//             backgroundColor: darkMode ? colorDark : colorLight,
-//             body: SafeArea(
-//               child: Padding(
-//                 padding: const EdgeInsets.all(18),
-//                 child: Column(
-//                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-//                   children: [
-//                     Container(
-//                       child: Column(
-//                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-//                         children: [
-//                           GestureDetector(
-//                             onTap: () {
-//                               setState(() {
-//                                 darkMode ? darkMode = false : darkMode = true;
-//                               });
-//                             },
-//                             child: _switchMode(),
-//                           ),
-//                           SizedBox(height: 80),
-//                           Align(
-//                             alignment: Alignment.centerRight,
-//                             child: Text(
-//                               calculator.expression,
-//                               style: TextStyle(
-//                                 fontSize: 55,
-//                                 fontWeight: FontWeight.bold,
-//                                 color: darkMode ? Colors.white : Colors.red,
-//                               ),
-//                             ),
-//                           ),
-//                           Row(
-//                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-//                             children: [
-//                               Text(
-//                                 '=',
-//                                 style: TextStyle(
-//                                     fontSize: 35,
-//                                     color: darkMode ? Colors.green : Colors.grey),
-//                               ),
-//                               Text(
-//                                 '10+500*12',
-//                                 style: TextStyle(
-//                                     fontSize: 20,
-//                                     color: darkMode ? Colors.green : Colors.grey),
-//                               )
-//                             ],
-//                           ),
-//                           SizedBox(
-//                             height: 10,
-//                           )
-//                         ],
-//                       ),
-//                     ),
-//                     Container(
-//                       child: Column(children: [
-//                         Row(
-//                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-//                           children: [
-//                             _buttonOval(title: 'sin'),
-//                             _buttonOval(title: 'cos'),
-//                             _buttonOval(title: 'tan'),
-//                             _buttonOval(title: '%')
-//                           ],
-//                         ),
-//                         Row(
-//                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-//                           children: [
-//                             _buttonRounded(
-//                                 title: 'C',
-//                                 textColor:
-//                                 darkMode ? Colors.green : Colors.redAccent),
-//                             _buttonRounded(title: '('),
-//                             _buttonRounded(title: ')'),
-//                             _buttonRounded(
-//                                 title: '/',
-//                                 textColor:
-//                                 darkMode ? Colors.green : Colors.redAccent)
-//                           ],
-//                         ),
-//                         Row(
-//                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-//                           children: [
-//                             _buttonRounded(title: '7'),
-//                             _buttonRounded(title: '8'),
-//                             _buttonRounded(title: '9'),
-//                             _buttonRounded(
-//                                 title: 'x',
-//                                 textColor:
-//                                 darkMode ? Colors.green : Colors.redAccent)
-//                           ],
-//                         ),
-//                         Row(
-//                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-//                           children: [
-//                             _buttonRounded(title: '4'),
-//                             _buttonRounded(title: '5'),
-//                             _buttonRounded(title: '6'),
-//                             _buttonRounded(
-//                                 title: '-',
-//                                 textColor:
-//                                 darkMode ? Colors.green : Colors.redAccent)
-//                           ],
-//                         ),
-//                         Row(
-//                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-//                           children: [
-//                             _buttonRounded(title: '1'),
-//                             _buttonRounded(title: '2'),
-//                             _buttonRounded(title: '3'),
-//                             _buttonRounded(
-//                                 title: '+',
-//                                 textColor:
-//                                 darkMode ? Colors.green : Colors.redAccent)
-//                           ],
-//                         ),
-//                         Row(
-//                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-//                           children: [
-//                             _buttonRounded(title: '0'),
-//                             _buttonRounded(title: ','),
-//                             _buttonRounded(
-//                                 icon: Icons.backspace_outlined,
-//                                 iconColor:
-//                                 darkMode ? Colors.green : Colors.redAccent),
-//                             _buttonRounded(
-//                                 title: '=',
-//                                 textColor:
-//                                 darkMode ? Colors.green : Colors.redAccent)
-//                           ],
-//                         )
-//                       ]),
-//                     ),
-//                   ],
-//                 ),
-//               ),
-//             ),
-//           );
-//         },
-//       ),
-//     );
-//   }
-//
-//   Widget _buttonRounded({
-//     String? title,
-//     double padding = 17,
-//     IconData? icon,
-//     Color? iconColor,
-//     Color? textColor,
-//   }) {
-//     return Consumer<CalculatorLogic>(
-//       builder: (context, calculator, _) {
-//         return Padding(
-//           padding: const EdgeInsets.all(8),
-//           child: NeuContainer(
-//             darkMode: darkMode,
-//             borderRadius: BorderRadius.circular(40),
-//             padding: EdgeInsets.all(padding),
-//             child: GestureDetector(
-//             onTap: () {
-//           if (title == 'C') {
-//           calculator.clearExpression();
-//           } else if (title == '=') {
-//           calculator.evaluateExpression();
-//           } else {
-//           calculator.addToExpression(title!);
-//           }
-//           },
-//             child: Container(
-//               width: padding * 2,
-//               height: padding * 2,
-//               child: Center(
-//                 child: title != null
-//                     ? Text(
-//                   '$title',
-//                   style: TextStyle(
-//                     color: textColor != null
-//                         ? textColor
-//                         : darkMode ? Colors.white : Colors.black,
-//                     fontSize: 30,
-//                   ),
-//                 )
-//                     : Icon(
-//                   icon,
-//                   color: iconColor,
-//                   size: 30,
-//                 ),
-//               ),
-//             ),
-//           ),
-//         ),
-//         );
-//       },
-//     );
-//   }
-//
-//   Widget _buttonOval({String? title, double padding = 17}) {
-//     return Consumer<CalculatorLogic>(
-//       builder: (context, calculator, _) {
-//         return Padding(
-//           padding: const EdgeInsets.all(10),
-//           child: NeuContainer(
-//             darkMode: darkMode,
-//             borderRadius: BorderRadius.circular(50),
-//             padding: EdgeInsets.symmetric(horizontal: padding, vertical: padding / 2),
-//             child: Container(
-//               width: padding * 2,
-//               child: Center(
-//                 child: Text(
-//                   '$title',
-//                   style: TextStyle(
-//                     color: darkMode ? Colors.white : Colors.black,
-//                     fontSize: 15,
-//                     fontWeight: FontWeight.bold,
-//                   ),
-//                 ),
-//               ),
-//             ),
-//           ),
-//         );
-//       },
-//     );
-//   }
-//
-//   Widget _switchMode() {
-//     return NeuContainer(
-//       darkMode: darkMode,
-//       padding: EdgeInsets.symmetric(vertical: 10, horizontal: 15),
-//       borderRadius: BorderRadius.circular(40),
-//       child: Container(
-//         width: 70,
-//         child: Row(
-//           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-//           children: [
-//             Icon(
-//               Icons.wb_sunny,
-//               color: darkMode ? Colors.grey : Colors.redAccent,
-//             ),
-//             Icon(
-//               Icons.nightlight_round,
-//               color: darkMode ? Colors.green : Colors.grey,
-//             ),
-//           ],
-//         ),
-//       ),
-//     );
-//   }
-// }
-
-
-//
-// class Homepage extends StatefulWidget {
-//   const Homepage({Key? key}) : super(key: key);
-//
-//   @override
-//   State<Homepage> createState() => _HomepageState();
-// }
-//
-// class _HomepageState extends State<Homepage> {
-//   bool darkMode=false;
-//   //final CalculatorLogic calculatorLogic = CalculatorLogic();
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       backgroundColor: darkMode ? colorDark : colorLight,
-//       body: SafeArea(//SafeArea is a widget that insets its child with sufficient padding to avoid obstacles.
-//                      // basically nodge ke neeche aa jayega safeArea main
-//         child: Padding(
-//           padding: const EdgeInsets.all(18),
-//           child: Column(
-//             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-//             children: [
-//               Container(
-//                 child: Column(
-//                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-//                   children: [
-//                     GestureDetector(
-//                         onTap: () {
-//                           setState(() {
-//                             darkMode ? darkMode = false : darkMode = true;
-//                           });
-//                         },
-//                         child: _switchMode()),
-//                     SizedBox(height: 80),
-//                     Align(
-//                       alignment: Alignment.centerRight,
-//                       child: Text(
-//                         '6.010',
-//                         style: TextStyle(
-//                             fontSize: 55,
-//                             fontWeight: FontWeight.bold,
-//                             color: darkMode ? Colors.white : Colors.red),
-//                       ),
-//                     ),
-//                     Row(
-//                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-//                       children: [
-//                         Text(
-//                           '=',
-//                           style: TextStyle(
-//                               fontSize: 35,
-//                               color: darkMode ? Colors.green : Colors.grey),
-//                         ),
-//                         Text(
-//                           '10+500*12',
-//                           style: TextStyle(
-//                               fontSize: 20,
-//                               color: darkMode ? Colors.green : Colors.grey),
-//                         )
-//                       ],
-//                     ),
-//                     SizedBox(
-//                       height: 10,
-//                     )
-//                   ],
-//                 ),
-//               ),
-//               Container(
-//                 child: Column(children: [
-//                   Row(
-//                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-//                     children: [
-//                       _buttonOval(title: 'sin'),
-//                       _buttonOval(title: 'cos'),
-//                       _buttonOval(title: 'tan'),
-//                       _buttonOval(title: '%')
-//                     ],
-//                   ),
-//                   Row(
-//                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-//                     children: [
-//                       _buttonRounded(
-//                           title: 'C',
-//                           textColor:
-//                           darkMode ? Colors.green : Colors.redAccent),
-//                       _buttonRounded(title: '('),
-//                       _buttonRounded(title: ')'),
-//                       _buttonRounded(
-//                           title: '/',
-//                           textColor: darkMode ? Colors.green : Colors.redAccent)
-//                     ],
-//                   ),
-//                   Row(
-//                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-//                     children: [
-//                       _buttonRounded(title: '7'),
-//                       _buttonRounded(title: '8'),
-//                       _buttonRounded(title: '9'),
-//                       _buttonRounded(
-//                           title: 'x',
-//                           textColor: darkMode ? Colors.green : Colors.redAccent)
-//                     ],
-//                   ),
-//                   Row(
-//                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-//                     children: [
-//                       _buttonRounded(title: '4'),
-//                       _buttonRounded(title: '5'),
-//                       _buttonRounded(title: '6'),
-//                       _buttonRounded(
-//                           title: '-',
-//                           textColor: darkMode ? Colors.green : Colors.redAccent)
-//                     ],
-//                   ),
-//                   Row(
-//                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-//                     children: [
-//                       _buttonRounded(title: '1'),
-//                       _buttonRounded(title: '2'),
-//                       _buttonRounded(title: '3'),
-//                       _buttonRounded(
-//                           title: '+',
-//                           textColor: darkMode ? Colors.green : Colors.redAccent)
-//                     ],
-//                   ),
-//                   Row(
-//                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-//                     children: [
-//                       _buttonRounded(title: '0'),
-//                       _buttonRounded(title: ','),
-//                       _buttonRounded(
-//                           icon: Icons.backspace_outlined,
-//                           iconColor:
-//                           darkMode ? Colors.green : Colors.redAccent),
-//                       _buttonRounded(
-//                           title: '=',
-//                           textColor: darkMode ? Colors.green : Colors.redAccent)
-//                     ],
-//                   )
-//                 ]),
-//               ),
-//             ],
-//           ),
-//         ),
-//       ),
-//     );
-//   }
-//
-//   Widget _buttonRounded(
-//       {String? title,
-//       double padding = 17,
-//       IconData? icon,
-//       Color? iconColor,
-//       Color? textColor}) {
-//     return Padding(
-//       padding: const EdgeInsets.all(8),
-//       child: NeuContainer(
-//         darkMode: darkMode,
-//         borderRadius: BorderRadius.circular(40),
-//         padding: EdgeInsets.all(padding),
-//         child: Container(
-//           width: padding * 2,
-//           height: padding * 2,
-//           child: Center(
-//               child: title != null
-//                   ? Text(
-//                       '$title',
-//                       style: TextStyle(
-//                           color: textColor != null
-//                               ? textColor
-//                               : darkMode
-//                                   ? Colors.white
-//                                   : Colors.black,
-//                           fontSize: 30),
-//                     )
-//                   : Icon(
-//                       icon,
-//                       color: iconColor,
-//                       size: 30,
-//                     )),
-//         ),
-//       ),
-//     );
-//   }
-//   Widget _buttonOval({String? title, double padding = 17}) {
-//     return Padding(
-//       padding: const EdgeInsets.all(10),
-//       child: NeuContainer(
-//         darkMode: darkMode,
-//         borderRadius: BorderRadius.circular(50),
-//         padding:
-//         EdgeInsets.symmetric(horizontal: padding, vertical: padding / 2),
-//         child: Container(
-//           width: padding * 2,
-//           child: Center(
-//             child: Text(
-//               '$title',
-//               style: TextStyle(
-//                   color: darkMode ? Colors.white : Colors.black,
-//                   fontSize: 15,
-//                   fontWeight: FontWeight.bold),
-//             ),
-//           ),
-//         ),
-//       ),
-//     );
-//   }
-//
-//   Widget _switchMode() {
-//     return NeuContainer(
-//       darkMode: darkMode,
-//       padding: EdgeInsets.symmetric(vertical: 10, horizontal: 15),
-//       borderRadius: BorderRadius.circular(40),
-//       child: Container(
-//         width: 70,
-//         child:
-//         Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-//           Icon(
-//             Icons.wb_sunny,
-//             color: darkMode ? Colors.grey : Colors.redAccent,
-//           ),
-//           Icon(
-//             Icons.nightlight_round,
-//             color: darkMode ? Colors.green : Colors.grey,
-//           ),
-//         ]),
-//       ),
-//     );
-//   }
-// }
