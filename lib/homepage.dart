@@ -19,7 +19,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   //String selectedcalculator="INFIX";
-  String selectedExpressionFormat = "INFIX";
+  String selectedExpressionFormat = "Infix";
 
   void _showSettingsPopupMenu(BuildContext context) async {
     final String? selectedOption = await showMenu<String>(
@@ -27,9 +27,9 @@ class _HomeScreenState extends State<HomeScreen> {
       position: RelativeRect.fromLTRB(100, 100, 0, 0), // Adjust the position as needed
       items: <PopupMenuEntry<String>>[
         PopupMenuItem<String>(
-          value: 'INFIX',
+          value: 'Infix',
           child: Text(
-              'INFIX',
+              'Infix',
               style: TextStyle(
                 //color: darkmode ? colorLight :colorDark,
                 //backgroundColor: darkmode ? colorDark :colorLight,
@@ -42,8 +42,8 @@ class _HomeScreenState extends State<HomeScreen> {
           },
         ),
         PopupMenuItem<String>(
-          value: 'PREFIX',
-          child: Text('PREFIX'),
+          value: 'Prefix',
+          child: Text('Prefix'),
           onTap: (){
             setState(() {
               selectedExpressionFormat="Prefix";
@@ -51,8 +51,8 @@ class _HomeScreenState extends State<HomeScreen> {
           },
         ),
         PopupMenuItem<String>(
-          value: 'POSTFIX',
-          child: Text('POSTFIX'),
+          value: 'Postfix',
+          child: Text('Postfix'),
           onTap: (){
             setState(() {
               selectedExpressionFormat="Postfix";
@@ -61,17 +61,16 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       ],
     );
-
-    if (selectedOption != null) {
-      // Handle the selected option here
-      // For example, you can call a method to update the expression format
-      // based on the selectedOption ('INFIX', 'PREFIX', 'POSTFIX')
-      // updateExpressionFormat(selectedOption);
-    }
+    // if (selectedOption != null) {
+    //   // Handle the selected option here
+    //   // For example, you can call a method to update the expression format
+    //   // based on the selectedOption ('INFIX', 'PREFIX', 'POSTFIX')
+    //   // updateExpressionFormat(selectedOption);
+    // }
   }
 
 
-  bool darkmode=false;
+  bool darkmode=true;
   String result="0";
   String userInput="";
   late String temp_input;
@@ -145,7 +144,7 @@ class _HomeScreenState extends State<HomeScreen> {
               userInput,
               style: TextStyle(
                 fontSize: 32,
-                color: darkmode ? Colors.white54 :userInputColor,
+                color: darkmode ? colorLight:colorDark,
               ),
             ),
           ),
@@ -157,7 +156,7 @@ class _HomeScreenState extends State<HomeScreen> {
               style: TextStyle(
                 fontSize: 48,
                 fontWeight: FontWeight.bold,
-                color: darkmode ? Colors.white54 :userInputColor,
+                color: userInputColor,
               ),
             ),
           ),
@@ -268,16 +267,18 @@ class _HomeScreenState extends State<HomeScreen> {
   String calculate(){
     String evaluating_String=userInput;
     
-    if(selectedExpressionFormat=="PREFIX"){
-      evaluating_String=prefixToInfix(userInput);
-      print(evaluating_String);
+    if(selectedExpressionFormat=="Prefix"){
+      String s=prefixToInfix(userInput);
+      evaluating_String=s;
+      print("Converted infix: $evaluating_String");
     }
 
-    if(selectedExpressionFormat=="POSTFIX"){
+    if(selectedExpressionFormat=="Postfix"){
       evaluating_String=postfixToInfix(userInput);
-      print(evaluating_String);
+      print("Converted infix: $evaluating_String");
     }
     try{
+      print("calculating\n");
       var exp= Parser().parse(evaluating_String);
       var eveluation=exp.evaluate(EvaluationType.REAL,ContextModel());
       setState(() {
@@ -334,8 +335,22 @@ class _HomeScreenState extends State<HomeScreen> {
   // prefixToInfix(String prefixExpression) {
   //   // Your conversion logic here
   // }
-  postfixToInfix(String postfixExpression) {
-    // Your conversion logic here
+  String postfixToInfix(String postfix) {
+    List<String> symbols = [];
+    for (int i = 0; i < postfix.length; i++) {
+      if (!isOperator(postfix[i])) {
+        symbols.add(postfix[i]);
+      } else {
+        String operand2 = symbols.removeLast();
+        String operand1 = symbols.removeLast();
+        String string = "($operand1${postfix[i]}$operand2)";
+        symbols.add(string);
+      }
+    }
+    return symbols.isEmpty ? "" : symbols.removeLast();
   }
 
+// postfixToInfix(String postfixExpression) {
+  //   // Your conversion logic here
+  // }
 }
