@@ -80,9 +80,9 @@ class _HomeScreenState extends State<HomeScreen> {
   Future showInstructionsDialog() =>showDialog(
       context: context,
         builder:(context) => AlertDialog(
-          title: Text("instructions"),
+          title: Text("Instructions"),
           content: Text(
-              "Instructions for input format:\n1. Enter single-digit numbers only.\n2. Operators should be directly adjacent to operands.\n3. Do not use parentheses. \n4. If input isn't in correct format answer would be displayed 0 .",
+              "Instructions for input format:\n1. Enter single-digit numbers only.\n2. Operators should be directly adjacent to operands.\n3. Do not use parentheses. \n4. If input isn't in correct format answer would be displayed 0 .\n5. Here is an example of Prefix expression : +*53/82 and whose Infix expression is ((5*3)+(8/2)) \n6. Here is an example of Postfix expression :53*82/+ and whose Infix expression is ((5*3)+(8/2))",
           ),
           actions: [
             TextButton(onPressed: (){
@@ -91,50 +91,9 @@ class _HomeScreenState extends State<HomeScreen> {
                       child: Text("OK")
                   ),
                ],
-        ));
+        )
+  );
 
-
-  // void _showSettingsPopupMenu(BuildContext context) async {
-  //   final String? selectedOption = await showMenu<String>(
-  //     context: context,
-  //     position: RelativeRect.fromLTRB(100, 100, 0, 0), // Adjust the position as needed
-  //     items: <PopupMenuEntry<String>>[
-  //       PopupMenuItem<String>(
-  //         value: 'Infix',
-  //         child: Text(
-  //             'Infix',
-  //             style: TextStyle(
-  //               //color: darkmode ? colorLight :colorDark,
-  //               //backgroundColor: darkmode ? colorDark :colorLight,
-  //             ),
-  //         ),
-  //         onTap: (){
-  //           setState(() {
-  //             selectedExpressionFormat="Infix";
-  //           });
-  //         },
-  //       ),
-  //       PopupMenuItem<String>(
-  //         value: 'Prefix',
-  //         child: Text('Prefix'),
-  //         onTap: (){
-  //           setState(() {
-  //             selectedExpressionFormat="Prefix";
-  //           });
-  //         },
-  //       ),
-  //       PopupMenuItem<String>(
-  //         value: 'Postfix',
-  //         child: Text('Postfix'),
-  //         onTap: (){
-  //           setState(() {
-  //             selectedExpressionFormat="Postfix";
-  //           });
-  //         },
-  //       ),
-  //     ],
-  //   );
-  // }
   bool darkmode=true;
   String result="0";
   String userInput="";

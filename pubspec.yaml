@@ -33,6 +33,8 @@ dependencies:
   flutter_parse: ^1.0.1
   math_expressions: ^2.4.0
   infix_expression_parser: ^1.0.2
+  shared_preferences: ^2.0.18
+  smooth_page_indicator: ^1.0.1
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
@@ -42,6 +44,13 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   provider: ^5.0.0
+  flutter_launcher_icons: "^0.13.1"
+
+flutter_icons:
+  android: true
+  ios: true
+  image_path: "asset/logo_panther.png"
+
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
