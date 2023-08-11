@@ -80,7 +80,11 @@ class _HomeScreenState extends State<HomeScreen> {
   Future showInstructionsDialog() =>showDialog(
       context: context,
         builder:(context) => AlertDialog(
-          title: Text("Instructions"),
+          title: Text("Instructions",
+          style: TextStyle(
+              color: darkmode ? Colors.black :Colors.white,
+            ),
+          ),
           backgroundColor: darkmode ? colorLight :colorDark,
           content: Text(
               "Instructions for input format:\n1. Enter single-digit numbers only.\n2. Operators should be directly adjacent to operands.\n3. Do not use parentheses. \n4. If input isn't in correct format answer would be displayed 0 .\n5. Here is an example of Prefix expression : +*53/82 and whose Infix expression is ((5*3)+(8/2)) \n6. Here is an example of Postfix expression :53*82/+ and whose Infix expression is ((5*3)+(8/2))",
