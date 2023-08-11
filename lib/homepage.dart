@@ -19,57 +19,122 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   //String selectedcalculator="INFIX";
+  bool isValidExpression = true;
   String selectedExpressionFormat = "Infix";
 
   void _showSettingsPopupMenu(BuildContext context) async {
     final String? selectedOption = await showMenu<String>(
       context: context,
-      position: RelativeRect.fromLTRB(100, 100, 0, 0), // Adjust the position as needed
+      position: RelativeRect.fromLTRB(100, 100, 0, 0),
       items: <PopupMenuEntry<String>>[
         PopupMenuItem<String>(
           value: 'Infix',
-          child: Text(
-              'Infix',
-              style: TextStyle(
-                //color: darkmode ? colorLight :colorDark,
-                //backgroundColor: darkmode ? colorDark :colorLight,
-              ),
-          ),
-          onTap: (){
+          child: Text('Infix'),
+          onTap: () {
             setState(() {
-              selectedExpressionFormat="Infix";
+              selectedExpressionFormat = "Infix";
+              result="0";
+              userInput="";
             });
           },
         ),
         PopupMenuItem<String>(
           value: 'Prefix',
           child: Text('Prefix'),
-          onTap: (){
+          onTap: () {
             setState(() {
               selectedExpressionFormat="Prefix";
+              result="0";
+              userInput="";
+              //Navigator.of(context).pop();
+              //showInstructionsDialog();
+            });
+            //Navigator.of(context).pop();
+            Future.delayed(Duration(milliseconds: 200), () {
+              showInstructionsDialog();
             });
           },
         ),
         PopupMenuItem<String>(
           value: 'Postfix',
           child: Text('Postfix'),
-          onTap: (){
+          onTap: () {
             setState(() {
               selectedExpressionFormat="Postfix";
+              result="0";
+              userInput="";
+              //Navigator.of(context).pop();
+              //showInstructionsDialog();
             });
+            //Navigator.of(context).pop();
+            Future.delayed(Duration(milliseconds: 200), () {
+              showInstructionsDialog();
+            });
+
           },
         ),
       ],
     );
-    // if (selectedOption != null) {
-    //   // Handle the selected option here
-    //   // For example, you can call a method to update the expression format
-    //   // based on the selectedOption ('INFIX', 'PREFIX', 'POSTFIX')
-    //   // updateExpressionFormat(selectedOption);
-    // }
   }
 
+  Future showInstructionsDialog() =>showDialog(
+      context: context,
+        builder:(context) => AlertDialog(
+          title: Text("instructions"),
+          content: Text(
+              "Instructions for input format:\n1. Enter single-digit numbers only.\n2. Operators should be directly adjacent to operands.\n3. Do not use parentheses. \n4. If input isn't in correct format answer would be displayed 0 .",
+          ),
+          actions: [
+            TextButton(onPressed: (){
+                      Navigator.of(context).pop();
+                      },
+                      child: Text("OK")
+                  ),
+               ],
+        ));
 
+
+  // void _showSettingsPopupMenu(BuildContext context) async {
+  //   final String? selectedOption = await showMenu<String>(
+  //     context: context,
+  //     position: RelativeRect.fromLTRB(100, 100, 0, 0), // Adjust the position as needed
+  //     items: <PopupMenuEntry<String>>[
+  //       PopupMenuItem<String>(
+  //         value: 'Infix',
+  //         child: Text(
+  //             'Infix',
+  //             style: TextStyle(
+  //               //color: darkmode ? colorLight :colorDark,
+  //               //backgroundColor: darkmode ? colorDark :colorLight,
+  //             ),
+  //         ),
+  //         onTap: (){
+  //           setState(() {
+  //             selectedExpressionFormat="Infix";
+  //           });
+  //         },
+  //       ),
+  //       PopupMenuItem<String>(
+  //         value: 'Prefix',
+  //         child: Text('Prefix'),
+  //         onTap: (){
+  //           setState(() {
+  //             selectedExpressionFormat="Prefix";
+  //           });
+  //         },
+  //       ),
+  //       PopupMenuItem<String>(
+  //         value: 'Postfix',
+  //         child: Text('Postfix'),
+  //         onTap: (){
+  //           setState(() {
+  //             selectedExpressionFormat="Postfix";
+  //           });
+  //         },
+  //       ),
+  //     ],
+  //   );
+  // }
   bool darkmode=true;
   String result="0";
   String userInput="";
@@ -119,7 +184,7 @@ class _HomeScreenState extends State<HomeScreen> {
         body: Column(
           children: [
             Container(
-              height: h/2.79,
+              height: h/3.00,
               child: resultWidget(),
             ),
             Expanded(
@@ -200,6 +265,10 @@ class _HomeScreenState extends State<HomeScreen> {
       return (darkmode? Colors.greenAccent:Colors.redAccent);
     }
   }
+
+
+
+
   Widget button(String text){
     return InkWell(
       onTap: (){
@@ -266,7 +335,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
   String calculate(){
     String evaluating_String=userInput;
-    
+
     if(selectedExpressionFormat=="Prefix"){
       String s=prefixToInfix(userInput);
       evaluating_String=s;
@@ -293,25 +362,8 @@ class _HomeScreenState extends State<HomeScreen> {
       return "Error";
       //return temp_input;
     }
-  }
 
-  // String calculate(){
-  //   try{
-  //     var exp= Parser().parse(userInput);
-  //     var eveluation=exp.evaluate(EvaluationType.REAL,ContextModel());
-  //     setState(() {
-  //       userInputColor=darkmode? Colors.white54 :Colors.black;
-  //     });
-  //     return eveluation.toString();
-  //   }
-  //   catch(e){
-  //     setState(() {
-  //       userInputColor=darkmode? Colors.greenAccent :Colors.redAccent;
-  //     });
-  //     return "Error";
-  //     //return temp_input;
-  //   }
-  // }
+  }
 
   bool isOperator(String symbol) {
     return symbol == "*" || symbol == "+" || symbol == "-" || symbol == "/" || symbol == "^" || symbol == "(" || symbol == ")";
@@ -332,9 +384,7 @@ class _HomeScreenState extends State<HomeScreen> {
     }
     return symbols.removeLast();
   }
-  // prefixToInfix(String prefixExpression) {
-  //   // Your conversion logic here
-  // }
+
   String postfixToInfix(String postfix) {
     List<String> symbols = [];
     for (int i = 0; i < postfix.length; i++) {
@@ -349,8 +399,6 @@ class _HomeScreenState extends State<HomeScreen> {
     }
     return symbols.isEmpty ? "" : symbols.removeLast();
   }
-
-// postfixToInfix(String postfixExpression) {
-  //   // Your conversion logic here
-  // }
 }
+
+//"Instructions for input format:\n1. Enter single-digit numbers only.\n2. Operators should be directly adjacent to operands.\n3. Do not use parentheses."
