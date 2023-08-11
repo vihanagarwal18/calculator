@@ -81,8 +81,12 @@ class _HomeScreenState extends State<HomeScreen> {
       context: context,
         builder:(context) => AlertDialog(
           title: Text("Instructions"),
+          backgroundColor: darkmode ? colorLight :colorDark,
           content: Text(
               "Instructions for input format:\n1. Enter single-digit numbers only.\n2. Operators should be directly adjacent to operands.\n3. Do not use parentheses. \n4. If input isn't in correct format answer would be displayed 0 .\n5. Here is an example of Prefix expression : +*53/82 and whose Infix expression is ((5*3)+(8/2)) \n6. Here is an example of Postfix expression :53*82/+ and whose Infix expression is ((5*3)+(8/2))",
+              style: TextStyle(
+                color: darkmode ? colorDark : colorLight,
+              ),
           ),
           actions: [
             TextButton(onPressed: (){

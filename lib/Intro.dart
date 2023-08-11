@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'homepage.dart';
+import 'splash.dart';
 // ignore_for_file: prefer_const_constructors
 
 class Intro extends StatefulWidget {
@@ -24,7 +25,7 @@ class _IntroState extends State<Intro> {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             CircleAvatar(
-              backgroundImage: AssetImage('asset/logo_panther.png'),
+              backgroundImage: AssetImage('asset/logo_panther.jpg'),
               radius: 100,
               backgroundColor: Colors.transparent,
             ),
@@ -44,7 +45,7 @@ class _IntroState extends State<Intro> {
                 Navigator.pop(context);
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => HomeScreen()),
+                  MaterialPageRoute(builder: (context) => SplashScreen()),
                 );
               },
               child: Container(

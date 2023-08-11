@@ -2,6 +2,7 @@ import 'package:calculator/homepage.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'Intro.dart';
+import 'splash.dart';
 // ignore_for_file: prefer_const_constructors
 
 void main() async {
@@ -28,7 +29,7 @@ class MyApp extends StatelessWidget{
       ),
       title: 'News App',
       debugShowCheckedModeBanner: false,
-      home: isFirstTime ? AppStart() : HomeScreen(),
+      home: isFirstTime ? AppStart() : SplashScreen(),
     );
   }
 
@@ -61,12 +62,12 @@ class _AppStartState extends State<AppStart> {
               notVisited();
               Navigator.pushReplacement(
                 context,
-                MaterialPageRoute(builder: (context) => HomeScreen()),
+                MaterialPageRoute(builder: (context) => SplashScreen()),
               );
             },
           );
         } else {
-          return HomeScreen();
+          return SplashScreen();
         }
       },
     );
