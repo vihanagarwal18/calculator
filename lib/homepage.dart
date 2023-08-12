@@ -5,6 +5,7 @@ import 'package:flutter/rendering.dart';
 //import 'package:provider/provider.dart';
 import 'package:math_expressions/math_expressions.dart';
 //import 'package:infix_expression_parser/infix_expression_converter.dart';
+import 'dart:developer' as developer;
 // ignore_for_file: prefer_const_constructors
 
 const Color colorDark=Color(0xFF374352);
@@ -314,7 +315,8 @@ class _HomeScreenState extends State<HomeScreen> {
       print("Converted infix: $evaluating_String");
     }
     try{
-      print("calculating\n");
+      //print("calculating\n");
+      developer.log("calculating");
       var exp= Parser().parse(evaluating_String);
       var eveluation=exp.evaluate(EvaluationType.REAL,ContextModel());
       setState(() {

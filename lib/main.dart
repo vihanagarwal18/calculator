@@ -27,9 +27,9 @@ class MyApp extends StatelessWidget{
       theme: ThemeData(
           colorScheme: ColorScheme.fromSeed(seedColor: Color(0xFF111929),)
       ),
-      title: 'News App',
+      title: 'Calculator App',
       debugShowCheckedModeBanner: false,
-      home: isFirstTime ? AppStart() : SplashScreen(),
+      home: isFirstTime ? AppStart() : HomeScreen(),
     );
   }
 
@@ -62,12 +62,12 @@ class _AppStartState extends State<AppStart> {
               notVisited();
               Navigator.pushReplacement(
                 context,
-                MaterialPageRoute(builder: (context) => SplashScreen()),
+                MaterialPageRoute(builder: (context) => HomeScreen()),
               );
             },
           );
         } else {
-          return SplashScreen();
+          return HomeScreen();
         }
       },
     );

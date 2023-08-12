@@ -45,7 +45,7 @@ class _IntroState extends State<Intro> {
                 Navigator.pop(context);
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => SplashScreen()),
+                  MaterialPageRoute(builder: (context) => HomeScreen()),
                 );
               },
               child: Container(
